@@ -1,0 +1,178 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "x-SPDX-FileCopyRightText": "Red Hat",
+    "x-SPDX-License-Identifier": "Apache-2.0",
+    "title": "PtpConfig",
+    "description": "PtpConfig is the Schema for the ptpconfigs API",
+    "type": "object",
+    "properties": {
+      "apiVersion": {
+        "description": "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+        "type": "string"
+      },
+      "kind": {
+        "description": "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+        "type": "string"
+      },
+      "metadata": {
+        "type": "object"
+      },
+      "spec": {
+        "description": "PtpConfigSpec defines the desired state of PtpConfig",
+        "type": "object",
+        "properties": {
+          "profile": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "interface": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "phc2sysConf": {
+                  "type": "string"
+                },
+                "phc2sysOpts": {
+                  "type": "string"
+                },
+                "plugins": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "x-kubernetes-preserve-unknown-fields": true
+                  }
+                },
+                "ptp4lConf": {
+                  "type": "string"
+                },
+                "ptp4lOpts": {
+                  "type": "string"
+                },
+                "ptpClockThreshold": {
+                  "type": "object",
+                  "properties": {
+                    "holdOverTimeout": {
+                      "description": "clock state to stay in holdover state in secs",
+                      "type": "integer",
+                      "format": "int64",
+                      "default": 5
+                    },
+                    "maxOffsetThreshold": {
+                      "description": "max offset in nano secs",
+                      "type": "integer",
+                      "format": "int64",
+                      "default": 100
+                    },
+                    "minOffsetThreshold": {
+                      "description": "min offset in nano secs",
+                      "type": "integer",
+                      "format": "int64",
+                      "default": -100
+                    }
+                  }
+                },
+                "ptpSchedulingPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "SCHED_OTHER",
+                    "SCHED_FIFO"
+                  ]
+                },
+                "ptpSchedulingPriority": {
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1,
+                  "maximum": 65
+                },
+                "ptpSettings": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "synce4lConf": {
+                  "type": "string"
+                },
+                "synce4lOpts": {
+                  "type": "string"
+                },
+                "ts2phcConf": {
+                  "type": "string"
+                },
+                "ts2phcOpts": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "recommend": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "priority",
+                "profile"
+              ],
+              "properties": {
+                "match": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "nodeLabel": {
+                        "type": "string"
+                      },
+                      "nodeName": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "priority": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "profile": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "profile",
+          "recommend"
+        ]
+      },
+      "status": {
+        "description": "PtpConfigStatus defines the observed state of PtpConfig",
+        "type": "object",
+        "properties": {
+          "matchList": {
+            "description": "INSERT ADDITIONAL STATUS FIELD - define observed state of cluster\nImportant: Run \"make\" to regenerate code after modifying this file",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "nodeName",
+                "profile"
+              ],
+              "properties": {
+                "nodeName": {
+                  "type": "string"
+                },
+                "profile": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }

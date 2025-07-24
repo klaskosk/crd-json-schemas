@@ -1,0 +1,345 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "x-SPDX-FileCopyRightText": "Red Hat",
+    "x-SPDX-License-Identifier": "Apache-2.0",
+    "title": "PolicyGenerator",
+    "description": "Schema for the policy.open-cluster-management.io/v1 PolicyGenerator Custom Resource.",
+    "type": "object",
+    "required": [
+      "apiVersion",
+      "kind",
+      "metadata",
+      "policyDefaults",
+      "policies"
+    ],
+    "properties": {
+      "apiVersion": {
+        "description": "The API version of the PolicyGenerator.",
+        "type": "string",
+        "const": "policy.open-cluster-management.io/v1"
+      },
+      "kind": {
+        "description": "The kind of the resource.",
+        "type": "string",
+        "const": "PolicyGenerator"
+      },
+      "metadata": {
+        "description": "Standard object's metadata.",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Required. Used to uniquely identify the configuration file.",
+            "type": "string"
+          }
+        },
+        "required": ["name"]
+      },
+      "placementBindingDefaults": {
+        "description": "Defaults for PlacementBinding generation.",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Set an explicit placement binding name to use rather than rely on the default.",
+            "type": "string"
+          }
+        }
+      },
+      "policyDefaults": {
+        "description": "Required. Defaults for policy generation. Any default value listed here can be overridden under an entry in the policies array except for 'namespace'.",
+        "type": "object",
+        "properties": {
+          "categories": {
+            "description": "Array of categories for the policy.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "complianceType": {
+            "description": "Determines the policy controller behavior when comparing the manifest to objects on the cluster.",
+            "type": "string",
+            "enum": ["musthave", "mustonlyhave", "mustnothave"]
+          },
+          "configurationPolicyAnnotations": {
+            "description": "Key-value pairs of annotations to set on generated configuration policies.",
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          },
+          "controls": {
+            "description": "Array of controls for the policy.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "consolidateManifests": {
+            "description": "If true, a single configuration policy should be generated for all the manifests.",
+            "type": "boolean"
+          },
+          "copyPolicyMetadata": {
+              "description": "If set to true (default), all the policy's labels and annotations will be copied to the replicated policy.",
+              "type": "boolean"
+          },
+          "customMessage": { "$ref": "#/definitions/customMessage" },
+          "dependencies": {
+            "description": "A list of objects that should be in specific compliance states before this policy is applied.",
+            "type": "array",
+            "items": { "$ref": "#/definitions/dependency" }
+          },
+          "description": { "type": "string" },
+          "disabled": { "type": "boolean" },
+          "evaluationInterval": { "$ref": "#/definitions/evaluationInterval" },
+          "extraDependencies": {
+            "description": "A list of objects that should be in specific compliance states before this policy is applied, added to each policy template.",
+            "type": "array",
+            "items": { "$ref": "#/definitions/dependency" }
+          },
+          "hubTemplateOptions": {
+              "type": "object",
+              "properties": {
+                  "serviceAccountName": {
+                      "description": "The name of a service account to use for all hub template lookups.",
+                      "type": "string"
+                  }
+              }
+          },
+          "pruneObjectBehavior": {
+              "description": "Determines whether objects created or monitored by the policy should be deleted when the policy is deleted.",
+              "type": "string",
+              "enum": ["DeleteIfCreated", "DeleteAll", "None"]
+          },
+          "ignorePending": { "type": "boolean" },
+          "informGatekeeperPolicies": { "type": "boolean" },
+          "informKyvernoPolicies": { "type": "boolean" },
+          "metadataComplianceType": {
+            "type": "string",
+            "enum": ["musthave", "mustonlyhave"]
+          },
+          "namespace": {
+            "description": "The namespace of all the policies.",
+            "type": "string"
+          },
+          "namespaceSelector": { "$ref": "#/definitions/namespaceSelector" },
+          "objectSelector": { "$ref": "#/definitions/labelSelector" },
+          "orderManifests": { "type": "boolean" },
+          "orderPolicies": { "type": "boolean" },
+          "placement": { "$ref": "#/definitions/placement" },
+          "recreateOption": {
+            "description": "Describes whether to delete and recreate an object when an update is required.",
+            "type": "string",
+            "enum": ["IfRequired", "Always", "None", ""]
+          },
+          "recordDiff": {
+              "type": "string",
+              "enum": ["InStatus", "Log", "None", ""]
+          },
+          "remediationAction": {
+            "type": "string",
+            "enum": ["inform", "enforce"]
+          },
+          "severity": { "type": "string" },
+          "standards": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "policySets": {
+              "type": "array",
+              "items": { "type": "string"}
+          },
+          "generatePolicyPlacement": { "type": "boolean" },
+          "generatePlacementWhenInSet": { "type": "boolean" },
+          "policyAnnotations": {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+          },
+          "policyLabels": {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+          },
+          "gatekeeperEnforcementAction": {
+              "description": "Overrides the spec.enforcementAction field of a Gatekeeper constraint.",
+              "type": "string",
+              "enum": ["deny", "warn", "dryrun"]
+          }
+        },
+        "required": ["namespace"]
+      },
+      "policySetDefaults": {
+        "description": "Defaults for policy set generation.",
+        "type": "object",
+        "properties": {
+          "placement": { "$ref": "#/definitions/placement" },
+          "generatePolicySetPlacement": {"type": "boolean"}
+        }
+      },
+      "policies": {
+        "description": "The list of policies to create.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "manifests": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/manifest" }
+            },
+            "categories": { "type": "array", "items": { "type": "string" } },
+            "complianceType": { "type": "string", "enum": ["musthave", "mustonlyhave", "mustnothave"] },
+            "configurationPolicyAnnotations": { "type": "object", "additionalProperties": { "type": "string" } },
+            "copyPolicyMetadata": { "type": "boolean" },
+            "customMessage": { "$ref": "#/definitions/customMessage" },
+            "metadataComplianceType": { "type": "string", "enum": ["musthave", "mustonlyhave"] },
+            "controls": { "type": "array", "items": { "type": "string" } },
+            "dependencies": { "type": "array", "items": { "$ref": "#/definitions/dependency" } },
+            "description": { "type": "string" },
+            "disabled": { "type": "boolean" },
+            "evaluationInterval": { "$ref": "#/definitions/evaluationInterval" },
+            "extraDependencies": { "type": "array", "items": { "$ref": "#/definitions/dependency" } },
+            "pruneObjectBehavior": { "type": "string", "enum": ["DeleteIfCreated", "DeleteAll", "None"] },
+            "ignorePending": { "type": "boolean" },
+            "informGatekeeperPolicies": { "type": "boolean" },
+            "informKyvernoPolicies": { "type": "boolean" },
+            "consolidateManifests": { "type": "boolean" },
+            "namespaceSelector": { "$ref": "#/definitions/namespaceSelector" },
+            "objectSelector": { "$ref": "#/definitions/labelSelector" },
+            "orderManifests": { "type": "boolean" },
+            "placement": { "$ref": "#/definitions/placement" },
+            "remediationAction": { "type": "string", "enum": ["inform", "enforce", ""] },
+            "recreateOption": { "type": "string", "enum": ["IfRequired", "Always", "None", ""] },
+            "recordDiff": { "type": "string", "enum": ["InStatus", "Log", "None", ""] },
+            "severity": { "type": "string" },
+            "standards": { "type": "array", "items": { "type": "string" } },
+            "policySets": { "type": "array", "items": { "type": "string" } },
+            "generatePolicyPlacement": { "type": "boolean" },
+            "generatePlacementWhenInSet": { "type": "boolean" },
+            "policyAnnotations": { "type": "object", "additionalProperties": { "type": "string" } },
+            "policyLabels": { "type": "object", "additionalProperties": { "type": "string" } },
+            "gatekeeperEnforcementAction": { "type": "string", "enum": ["deny", "warn", "dryrun"] }
+          },
+          "required": ["name", "manifests"]
+        }
+      },
+      "policySets": {
+        "description": "The list of policy sets to create.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "description": { "type": "string" },
+            "policies": { "type": "array", "items": { "type": "string" } },
+            "placement": { "$ref": "#/definitions/placement" },
+            "generatePolicySetPlacement": {"type": "boolean"}
+          },
+          "required": ["name"]
+        }
+      }
+    },
+    "definitions": {
+      "labelSelector": {
+          "type": "object",
+          "properties": {
+              "matchLabels": { "type": "object", "additionalProperties": { "type": "string" } },
+              "matchExpressions": {
+                  "type": "array",
+                  "items": {
+                      "type": "object",
+                      "properties": {
+                          "key": { "type": "string" },
+                          "operator": { "type": "string" },
+                          "values": { "type": "array", "items": { "type": "string" } }
+                      },
+                      "required": ["key", "operator"]
+                  }
+              }
+          }
+      },
+      "namespaceSelector": {
+        "type": "object",
+        "properties": {
+          "include": { "type": "array", "items": { "type": "string" } },
+          "exclude": { "type": "array", "items": { "type": "string" } },
+          "matchLabels": { "type": "object", "additionalProperties": { "type": "string" } },
+          "matchExpressions": {
+              "type": "array",
+              "items": {
+                  "type": "object",
+                  "properties": {
+                      "key": { "type": "string" },
+                      "operator": { "type": "string" },
+                      "values": { "type": "array", "items": { "type": "string" } }
+                  },
+                  "required": ["key", "operator"]
+              }
+          }
+        }
+      },
+      "dependency": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "namespace": { "type": "string" },
+          "compliance": { "type": "string" },
+          "kind": { "type": "string" },
+          "apiVersion": { "type": "string" }
+        },
+        "required": ["name"]
+      },
+      "placement": {
+        "type": "object",
+        "properties": {
+          "clusterSelectors": { "type": "object", "additionalProperties": { "type": "string" } },
+          "clusterSelector": { "$ref": "#/definitions/labelSelector" },
+          "labelSelector": { "$ref": "#/definitions/labelSelector" },
+          "name": { "type": "string" },
+          "placementPath": { "type": "string" },
+          "placementRulePath": { "type": "string" },
+          "placementName": { "type": "string" },
+          "placementRuleName": { "type": "string" }
+        }
+      },
+      "manifest": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string" },
+          "name": { "type": "string" },
+          "complianceType": { "type": "string" },
+          "metadataComplianceType": { "type": "string" },
+          "namespaceSelector": { "$ref": "#/definitions/namespaceSelector" },
+          "objectSelector": { "$ref": "#/definitions/labelSelector" },
+          "customMessage": { "$ref": "#/definitions/customMessage" },
+          "evaluationInterval": { "$ref": "#/definitions/evaluationInterval" },
+          "extraDependencies": { "type": "array", "items": { "$ref": "#/definitions/dependency" } },
+          "hubTemplateOptions": {
+              "type": "object",
+              "properties": { "serviceAccountName": { "type": "string" } }
+          },
+          "pruneObjectBehavior": { "type": "string" },
+          "ignorePending": { "type": "boolean" },
+          "remediationAction": { "type": "string" },
+          "recreateOption": { "type": "string" },
+          "recordDiff": { "type": "string" },
+          "severity": { "type": "string" },
+          "gatekeeperEnforcementAction": { "type": "string" },
+          "patches": { "type": "array", "items": { "type": "object" } },
+          "openapi": {
+              "type": "object",
+              "properties": {
+                  "path": { "type": "string" }
+              }
+          }
+        },
+        "required": ["path"]
+      },
+      "customMessage": {
+        "type": "object",
+        "properties": {
+          "compliant": { "type": "string" },
+          "noncompliant": { "type": "string" }
+        }
+      },
+      "evaluationInterval": {
+        "type": "object",
+        "properties": {
+          "compliant": { "type": "string" },
+          "noncompliant": { "type": "string" }
+        }
+      }
+    }
+  }

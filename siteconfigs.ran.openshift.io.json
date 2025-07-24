@@ -1,0 +1,314 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "x-SPDX-FileCopyRightText": "Red Hat",
+    "x-SPDX-License-Identifier": "Apache-2.0",
+    "title": "SiteConfig",
+    "type": "object",
+    "required": [
+      "apiVersion",
+      "kind",
+      "metadata",
+      "spec"
+    ],
+    "properties": {
+      "apiVersion": {
+        "type": "string",
+        "description": "APIVersion defines the versioned schema of this representation of an object."
+      },
+      "kind": {
+        "type": "string",
+        "description": "Kind is a string value representing the REST resource this object represents."
+      },
+      "metadata": {
+        "type": "object",
+        "title": "Metadata",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "spec": {
+        "type": "object",
+        "title": "Spec",
+        "required": [
+          "pullSecretRef",
+          "clusterImageSetNameRef",
+          "baseDomain",
+          "clusters"
+        ],
+        "properties": {
+          "pullSecretRef": {
+            "type": "object",
+            "title": "PullSecretRef",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" }
+            }
+          },
+          "clusterImageSetNameRef": {
+            "type": "string"
+          },
+          "sshPublicKey": {
+            "type": "string"
+          },
+          "sshPrivateKeySecretRef": {
+            "type": "object",
+            "title": "SshPrivateKeySecretRef",
+             "required": ["name"],
+            "properties": {
+              "name": { "type": "string" }
+            }
+          },
+          "baseDomain": {
+            "type": "string"
+          },
+          "crTemplates": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          },
+          "crAnnotations": {
+              "type": "object",
+              "title": "CrAnnotations",
+              "properties": {
+                  "add": {
+                      "type": "object",
+                      "additionalProperties": {
+                          "type": "object",
+                          "additionalProperties": { "type": "string"}
+                      }
+                  }
+              }
+          },
+          "biosConfigRef": {
+            "type": "object",
+            "title": "BiosConfigRef",
+            "properties": {
+              "filePath": { "type": "string" }
+            }
+          },
+          "clusters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "title": "Clusters",
+              "required": ["clusterName", "nodes"],
+              "properties": {
+                "apiVIP": { "type": "string" },
+                "ingressVIP": { "type": "string" },
+                "apiVIPs": { "type": "array", "items": { "type": "string" }},
+                "ingressVIPs": { "type": "array", "items": { "type": "string" }},
+                "clusterName": { "type": "string" },
+                "holdInstallation": { "type": "boolean", "default": false },
+                "additionalNTPSources": { "type": "array", "items": { "type": "string" } },
+                "machineNetwork": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "cidr": { "type": "string" }
+                    }
+                  }
+                },
+                "serviceNetwork": { "type": "array", "items": { "type": "string" } },
+                "clusterLabels": { "type": "object", "additionalProperties": { "type": "string" } },
+                "networkType": { "type": "string", "default": "OVNKubernetes" },
+                "installConfigOverrides": { "type": "string" },
+                "clusterNetwork": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "cidr": { "type": "string" },
+                      "hostPrefix": { "type": "integer" }
+                    }
+                  }
+                },
+                "ignitionConfigOverride": { "type": "string" },
+                "diskEncryption": {
+                  "type": "object",
+                  "properties": {
+                      "type": {"type": "string", "enum": ["tpmv2", "tang", "none"], "default": "none"},
+                      "tang": {
+                          "type": "array",
+                          "items": {
+                              "type": "object",
+                              "properties": {
+                                  "url": {"type": "string"},
+                                  "thumbprint": {"type": "string"}
+                              }
+                          }
+                      },
+                       "tpm2": {
+                          "type": "object",
+                          "properties": {
+                              "pcrList": {"type": "string"}
+                          }
+                      }
+                  }
+                },
+                "proxy": {
+                  "type": "object",
+                  "properties": {
+                    "httpProxy": { "type": "string" },
+                    "httpsProxy": { "type": "string" },
+                    "noProxy": { "type": "string" }
+                  }
+                },
+                "extraManifestPath": { "type": "string" },
+                "clusterImageSetNameRef": { "type": "string" },
+                 "biosConfigRef": {
+                    "type": "object",
+                    "title": "BiosConfigRef",
+                    "properties": {
+                      "filePath": { "type": "string" }
+                    }
+                  },
+                  "extraManifests": {
+                      "type": "object",
+                      "properties": {
+                          "searchPaths": { "type": "array", "items": { "type": "string"}},
+                          "filter": {
+                              "type": "object",
+                              "properties": {
+                                  "inclusionDefault": {"type": "string", "enum": ["include", "exclude"]},
+                                  "exclude": {"type": "array", "items": {"type": "string"}},
+                                  "include": {"type": "array", "items": {"type": "string"}}
+                              }
+                          }
+                      }
+                  },
+                  "cpuPartitioningMode": {"type": "string", "enum": ["None", "AllNodes"], "default": "None"},
+                  "siteConfigMap": {
+                      "type": "object",
+                      "properties": {
+                          "name": {"type": "string"},
+                          "namespace": {"type": "string", "default": "ztp-site"},
+                          "data": {"type": "object", "additionalProperties": {"type": "string"}}
+                      }
+                  },
+                  "crTemplates": {"type": "object", "additionalProperties": {"type": "string"}},
+                  "crAnnotations": {
+                      "type": "object",
+                      "title": "CrAnnotations",
+                      "properties": {
+                          "add": {
+                              "type": "object",
+                              "additionalProperties": {
+                                  "type": "object",
+                                  "additionalProperties": { "type": "string"}
+                              }
+                          }
+                      }
+                  },
+                  "crSuppression": {"type": "array", "items": {"type": "string"}},
+                  "mergeDefaultMachineConfigs": {"type": "boolean"},
+                "nodes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "title": "Nodes",
+                    "required": ["hostName", "bootMACAddress"],
+                    "properties": {
+                      "bmcAddress": { "type": "string" },
+                      "bootMACAddress": { "type": "string" },
+                      "automatedCleaningMode": {"type": "string", "enum": ["metadata", "disabled"], "default": "disabled"},
+                      "rootDeviceHints": { "type": "object" },
+                      "cpuset": { "type": "string" },
+                      "nodeNetwork": {
+                        "type": "object",
+                        "properties": {
+                          "config": { "type": "object" },
+                          "interfaces": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": { "type": "string" },
+                                "macAddress": { "type": "string" }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "nodeLabels": { "type": "object", "additionalProperties": { "type": "string" } },
+                      "hostName": { "type": "string" },
+                      "bmcCredentialsName": {
+                        "type": "object",
+                        "required": ["name"],
+                        "properties": {
+                          "name": { "type": "string" }
+                        }
+                      },
+                      "bootMode": { "type": "string", "enum": ["UEFI", "legacy", "UEFISecureBoot"], "default": "UEFI"},
+                      "userData": { "type": "object" },
+                      "installerArgs": { "type": "string" },
+                      "ignitionConfigOverride": { "type": "string" },
+                      "role": { "type": "string", "default": "master" },
+                      "crTemplates": {"type": "object", "additionalProperties": {"type": "string"}},
+                      "crAnnotations": {
+                          "type": "object",
+                          "title": "CrAnnotations",
+                          "properties": {
+                              "add": {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                      "type": "object",
+                                      "additionalProperties": { "type": "string"}
+                                  }
+                              }
+                          }
+                      },
+                      "crSuppression": {"type": "array", "items": {"type": "string"}},
+                      "biosConfigRef": {
+                        "type": "object",
+                        "title": "BiosConfigRef",
+                        "properties": {
+                          "filePath": { "type": "string" }
+                        }
+                      },
+                      "diskPartition": {
+                          "type": "array",
+                          "items": {
+                              "type": "object",
+                              "properties": {
+                                  "device": {"type": "string"},
+                                  "partitions": {
+                                      "type": "array",
+                                      "items": {
+                                          "type": "object",
+                                          "properties": {
+                                              "mount_point": {"type": "string"},
+                                              "size": {"type": "integer", "minimum": 1},
+                                              "start": {"type": "integer", "minimum": 0},
+                                              "file_system_format": {"type": "string", "default": "xfs"}
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+                      },
+                      "ironicInspect": {"type": "string", "enum": ["enabled", "disabled"], "default": "enabled"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "definitions": {}
+  }
