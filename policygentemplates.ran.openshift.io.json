@@ -12,80 +12,98 @@
   ],
   "properties": {
     "apiVersion": {
-      "type": "string"
+      "type": "string",
+      "description": "API version of the PolicyGenTemplate object. Typically 'ran.openshift.io/v1'."
     },
     "kind": {
-      "type": "string"
+      "type": "string",
+      "description": "Kind of the object. Should be 'PolicyGenTemplate'."
     },
     "metadata": {
-      "$ref": "#/definitions/MetaData"
+      "$ref": "#/definitions/MetaData",
+      "description": "Standard object metadata. Includes name, namespace, labels, and annotations."
     },
     "spec": {
-      "$ref": "#/definitions/PolicyGenTempSpec"
+      "$ref": "#/definitions/PolicyGenTempSpec",
+      "description": "Specification for the PolicyGenTemplate, defining policy generation rules and source files."
     }
   },
   "definitions": {
     "MetaData": {
       "type": "object",
+      "description": "Metadata for the object, including name, namespace, labels, and annotations.",
       "required": [
         "name"
       ],
       "properties": {
         "annotations": {
           "type": "object",
+          "description": "Annotations to attach to the object. Key-value pairs.",
           "additionalProperties": {
             "type": "string"
           }
         },
         "labels": {
           "type": "object",
+          "description": "Labels to attach to the object. Key-value pairs.",
           "additionalProperties": {
             "type": "string"
           }
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "description": "Name of the object. Must be unique within a namespace."
         },
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "description": "Namespace for the object. Optional."
         }
       }
     },
     "PolicyGenTempSpec": {
       "type": "object",
+      "description": "Specification for generating policies, including binding rules, compliance settings, and source files.",
       "properties": {
         "bindingRules": {
           "type": "object",
+          "description": "Label selector rules for binding the generated policy to clusters. Key-value pairs.",
           "additionalProperties": {
             "type": "string"
           }
         },
         "bindingExcludedRules": {
           "type": "object",
+          "description": "Label selector rules for excluding clusters from binding. Key-value pairs.",
           "additionalProperties": {
             "type": "string"
           }
         },
         "mcp": {
-          "type": "string"
+          "type": "string",
+          "description": "MachineConfigPool name to target for the generated policy. Optional."
         },
         "wrapInPolicy": {
           "type": "boolean",
-          "default": true
+          "default": true,
+          "description": "Whether to wrap the generated content in a Policy object. Default is true."
         },
         "remediationAction": {
           "type": "string",
-          "default": "inform"
+          "default": "inform",
+          "description": "Remediation action for the policy. Typical values: 'inform', 'enforce'. Default is 'inform'."
         },
         "complianceType": {
           "type": "string",
-          "default": "musthave"
+          "default": "musthave",
+          "description": "Compliance type for the policy. Typical values: 'musthave', 'mustonlyhave'. Default is 'musthave'."
         },
         "evaluationInterval": {
-          "$ref": "#/definitions/EvaluationInterval"
+          "$ref": "#/definitions/EvaluationInterval",
+          "description": "Interval settings for policy evaluation when compliant or noncompliant."
         },
         "sourceFiles": {
           "type": "array",
+          "description": "List of source files to use for generating policies.",
           "items": {
             "$ref": "#/definitions/SourceFile"
           }
@@ -94,55 +112,70 @@
     },
     "EvaluationInterval": {
       "type": "object",
+      "description": "Policy evaluation intervals for compliant and noncompliant states.",
       "properties": {
         "compliant": {
           "type": "string",
-          "default": "10m"
+          "default": "10m",
+          "description": "Interval for re-evaluating compliant policies. Default is '10m'."
         },
         "noncompliant": {
           "type": "string",
-          "default": "10s"
+          "default": "10s",
+          "description": "Interval for re-evaluating noncompliant policies. Default is '10s'."
         }
       }
     },
     "SourceFile": {
       "type": "object",
+      "description": "Describes a source file used to generate a policy, with optional overrides.",
       "required": [
         "fileName"
       ],
       "properties": {
         "fileName": {
-          "type": "string"
+          "type": "string",
+          "description": "Name of the source file to use for policy generation."
         },
         "policyName": {
-          "type": "string"
+          "type": "string",
+          "description": "Override for the generated policy name. Optional."
         },
         "complianceType": {
-          "type": "string"
+          "type": "string",
+          "description": "Override for compliance type for this source file. Optional."
         },
         "remediationAction": {
-          "type": "string"
+          "type": "string",
+          "description": "Override for remediation action for this source file. Optional."
         },
         "metadata": {
-          "$ref": "#/definitions/MetaData"
+          "$ref": "#/definitions/MetaData",
+          "description": "Override metadata for the generated policy. Optional."
         },
         "spec": {
-          "type": "object"
+          "type": "object",
+          "description": "Spec content to merge into the generated policy. Optional."
         },
         "data": {
-          "type": "object"
+          "type": "object",
+          "description": "Data content to merge into the generated policy. Optional."
         },
         "status": {
-          "type": "object"
+          "type": "object",
+          "description": "Status content to merge into the generated policy. Optional."
         },
         "binaryData": {
-          "type": "object"
+          "type": "object",
+          "description": "Binary data to merge into the generated policy. Optional."
         },
         "stringData": {
-          "type": "object"
+          "type": "object",
+          "description": "String data to merge into the generated policy. Optional."
         },
         "evaluationInterval": {
-          "$ref": "#/definitions/EvaluationInterval"
+          "$ref": "#/definitions/EvaluationInterval",
+          "description": "Override evaluation interval for this source file. Optional."
         }
       }
     }

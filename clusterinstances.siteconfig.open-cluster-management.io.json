@@ -14,6 +14,7 @@
       "type": "string"
     },
     "metadata": {
+      "description": "Standard object metadata. Includes fields such as name, namespace, labels, and annotations. Used to uniquely identify and organize the resource within Kubernetes. See: https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/#required-fields",
       "type": "object"
     },
     "spec": {
@@ -138,7 +139,7 @@
             },
             "type": "object"
           },
-          "description": "Additional cluster-wide annotations to be applied to the rendered templates",
+          "description": "A map of additional cluster-wide annotations to be applied to the rendered templates. The outer object key is the resource type (e.g., 'Namespace', 'MachineConfig'), and the value is a map of annotation key-value pairs. Use this to add custom metadata to cluster resources for integration, automation, or policy purposes.",
           "type": "object"
         },
         "extraLabels": {
@@ -148,7 +149,7 @@
             },
             "type": "object"
           },
-          "description": "Additional cluster-wide labels to be applied to the rendered templates",
+          "description": "A map of additional cluster-wide labels to be applied to the rendered templates. The outer object key is the resource type (e.g., 'Namespace', 'MachineConfig'), and the value is a map of label key-value pairs. Use this to add custom labels for selection, grouping, or automation of cluster resources.",
           "type": "object"
         },
         "extraManifestsRefs": {
@@ -274,7 +275,7 @@
                   },
                   "type": "object"
                 },
-                "description": "Additional node-level annotations to be applied to the rendered templates",
+                "description": "A map of additional node-level annotations to be applied to the rendered templates for this node. The outer object key is the resource type (e.g., 'Node', 'MachineConfig'), and the value is a map of annotation key-value pairs. Use this to add custom metadata to node resources for integration, automation, or policy purposes.",
                 "type": "object"
               },
               "extraLabels": {
@@ -284,7 +285,7 @@
                   },
                   "type": "object"
                 },
-                "description": "Additional node-level labels to be applied to the rendered templates",
+                "description": "A map of additional node-level labels to be applied to the rendered templates for this node. The outer object key is the resource type (e.g., 'Node', 'MachineConfig'), and the value is a map of label key-value pairs. Use this to add custom labels for selection, grouping, or automation of node resources.",
                 "type": "object"
               },
               "hostName": {

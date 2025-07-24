@@ -30,46 +30,54 @@
               ],
               "properties": {
                 "interface": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The network interface to be used by the ptp4l service, for example 'ens787f1'. This is the interface on which PTP synchronization will be performed."
                 },
                 "name": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The name of the profile object which uniquely identifies a profile. Used to reference this profile in the recommend section."
                 },
                 "phc2sysConf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "String containing the configuration to replace the default /etc/phc2sys.conf file. Leave empty to use the default configuration."
                 },
                 "phc2sysOpts": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "System config options for the phc2sys service. If empty, the PTP Operator does not start the phc2sys service. For Intel Columbiaville 800 Series NICs, set to '-a -r -m -n 24 -N 8 -R 16'."
                 },
                 "plugins": {
                   "type": "object",
+                  "description": "Plugin configuration for the profile. Used to enable and configure hardware-specific plugins such as E810 for Grandmaster mode.",
                   "additionalProperties": {
                     "x-kubernetes-preserve-unknown-fields": true
                   }
                 },
                 "ptp4lConf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "String containing the configuration to replace the default /etc/ptp4l.conf file. Leave empty to use the default configuration."
                 },
                 "ptp4lOpts": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "System config options for the ptp4l service, for example '-2' to select IEEE 802.3 network transport. Do not include '-i <interface>' or '-f /etc/ptp4l.conf' as these are appended automatically."
                 },
                 "ptpClockThreshold": {
                   "type": "object",
+                  "description": "Configures how long after the PTP master clock is disconnected before PTP events are triggered. Also sets offset thresholds for clock state transitions.",
                   "properties": {
                     "holdOverTimeout": {
-                      "description": "clock state to stay in holdover state in secs",
+                      "description": "Time in seconds before the PTP clock event state changes to FREERUN when the PTP master clock is disconnected.",
                       "type": "integer",
                       "format": "int64",
                       "default": 5
                     },
                     "maxOffsetThreshold": {
-                      "description": "max offset in nano secs",
+                      "description": "Maximum offset in nanoseconds. If the offset exceeds this value, the PTP clock state is set to FREERUN.",
                       "type": "integer",
                       "format": "int64",
                       "default": 100
                     },
                     "minOffsetThreshold": {
-                      "description": "min offset in nano secs",
+                      "description": "Minimum offset in nanoseconds. If the offset is less than this value, the PTP clock state is set to FREERUN.",
                       "type": "integer",
                       "format": "int64",
                       "default": -100
@@ -78,6 +86,7 @@
                 },
                 "ptpSchedulingPolicy": {
                   "type": "string",
+                  "description": "Scheduling policy for ptp4l and phc2sys processes. Default is 'SCHED_OTHER'. Use 'SCHED_FIFO' on systems that support FIFO scheduling.",
                   "enum": [
                     "SCHED_OTHER",
                     "SCHED_FIFO"
@@ -87,25 +96,31 @@
                   "type": "integer",
                   "format": "int64",
                   "minimum": 1,
-                  "maximum": 65
+                  "maximum": 65,
+                  "description": "Integer value from 1-65 used to set FIFO priority for ptp4l and phc2sys processes when ptpSchedulingPolicy is set to SCHED_FIFO. Not used when ptpSchedulingPolicy is SCHED_OTHER."
                 },
                 "ptpSettings": {
                   "type": "object",
+                  "description": "Additional settings for PTP, such as log filtering and high availability profiles. Keys and values are strings.",
                   "additionalProperties": {
                     "type": "string"
                   }
                 },
                 "synce4lConf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "String containing the configuration to replace the default /etc/synce4l.conf file. Leave empty to use the default configuration."
                 },
                 "synce4lOpts": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "System config options for the synce4l service."
                 },
                 "ts2phcConf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "String containing the configuration to replace the default /etc/ts2phc.conf file. Leave empty to use the default configuration."
                 },
                 "ts2phcOpts": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "System config options for the ts2phc service."
                 }
               }
             }
@@ -121,24 +136,29 @@
               "properties": {
                 "match": {
                   "type": "array",
+                  "description": "Array of match rules to determine which nodes the profile should be applied to. Each rule can match on nodeLabel and/or nodeName.",
                   "items": {
                     "type": "object",
                     "properties": {
                       "nodeLabel": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Key of the node.Labels field from the node object. Used to match nodes by label."
                       },
                       "nodeName": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Value of the node.Name field from the node object. Used to match nodes by name."
                       }
                     }
                   }
                 },
                 "priority": {
                   "type": "integer",
-                  "format": "int64"
+                  "format": "int64",
+                  "description": "Priority for applying the profile. Lower numbers mean higher priority (0 is highest). Used when multiple profiles could match a node."
                 },
                 "profile": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Name of the profile to apply, as defined in the profile section."
                 }
               }
             }
@@ -164,10 +184,12 @@
               ],
               "properties": {
                 "nodeName": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Name of the node to which the profile is applied."
                 },
                 "profile": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Name of the profile applied to the node."
                 }
               }
             }

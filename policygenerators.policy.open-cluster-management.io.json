@@ -164,8 +164,14 @@
         "description": "Defaults for policy set generation.",
         "type": "object",
         "properties": {
-          "placement": { "$ref": "#/definitions/placement" },
-          "generatePolicySetPlacement": {"type": "boolean"}
+          "placement": {
+            "$ref": "#/definitions/placement",
+            "description": "Optional. The placement configuration for the policy sets. This defaults to a placement configuration that matches all clusters. If a placement.name is not provided here for placement consolidation, it will fall back to policyDefaults.placement.name, if provided there. (See policyDefaults.placement for description.)"
+          },
+          "generatePolicySetPlacement": {
+            "type": "boolean",
+            "description": "Optional. Whether to generate placement manifests for policy sets. This defaults to true."
+          }
         }
       },
       "policies": {
@@ -234,16 +240,22 @@
     "definitions": {
       "labelSelector": {
           "type": "object",
+          "description": "A label selector is a Kubernetes object used to select resources based on their labels. It can match labels directly or use match expressions for more complex selection.",
           "properties": {
-              "matchLabels": { "type": "object", "additionalProperties": { "type": "string" } },
+              "matchLabels": {
+                "type": "object",
+                "additionalProperties": { "type": "string" },
+                "description": "A map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is 'key', the operator is 'In', and the values array contains only 'value'. The requirements are ANDed."
+              },
               "matchExpressions": {
                   "type": "array",
+                  "description": "A list of label selector requirements. The requirements are ANDed.",
                   "items": {
                       "type": "object",
                       "properties": {
-                          "key": { "type": "string" },
-                          "operator": { "type": "string" },
-                          "values": { "type": "array", "items": { "type": "string" } }
+                          "key": { "type": "string", "description": "The label key that the selector applies to." },
+                          "operator": { "type": "string", "description": "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist." },
+                          "values": { "type": "array", "items": { "type": "string" }, "description": "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty." }
                       },
                       "required": ["key", "operator"]
                   }
@@ -252,18 +264,20 @@
       },
       "namespaceSelector": {
         "type": "object",
+        "description": "A namespace selector is used to select namespaces based on include/exclude lists or label selectors.",
         "properties": {
-          "include": { "type": "array", "items": { "type": "string" } },
-          "exclude": { "type": "array", "items": { "type": "string" } },
-          "matchLabels": { "type": "object", "additionalProperties": { "type": "string" } },
+          "include": { "type": "array", "items": { "type": "string" }, "description": "A list of namespaces to include." },
+          "exclude": { "type": "array", "items": { "type": "string" }, "description": "A list of namespaces to exclude." },
+          "matchLabels": { "type": "object", "additionalProperties": { "type": "string" }, "description": "A map of {key,value} pairs to match namespaces by their labels." },
           "matchExpressions": {
               "type": "array",
+              "description": "A list of label selector requirements for namespaces. The requirements are ANDed.",
               "items": {
                   "type": "object",
                   "properties": {
-                      "key": { "type": "string" },
-                      "operator": { "type": "string" },
-                      "values": { "type": "array", "items": { "type": "string" } }
+                      "key": { "type": "string", "description": "The label key that the selector applies to." },
+                      "operator": { "type": "string", "description": "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist." },
+                      "values": { "type": "array", "items": { "type": "string" }, "description": "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty." }
                   },
                   "required": ["key", "operator"]
               }
@@ -272,56 +286,61 @@
       },
       "dependency": {
         "type": "object",
+        "description": "A dependency specifies an object that must be in a specific compliance state before this policy or manifest is applied.",
         "properties": {
-          "name": { "type": "string" },
-          "namespace": { "type": "string" },
-          "compliance": { "type": "string" },
-          "kind": { "type": "string" },
-          "apiVersion": { "type": "string" }
+          "name": { "type": "string", "description": "Required. The name of the object being depended on." },
+          "namespace": { "type": "string", "description": "Optional. The namespace of the object being depended on. Will default to the namespace of policies from this generator." },
+          "compliance": { "type": "string", "description": "Optional. The compliance state the object should be in. Defaults to 'Compliant'." },
+          "kind": { "type": "string", "description": "Optional. The kind of the object. Defaults to 'Policy', but can also be things like ConfigurationPolicy." },
+          "apiVersion": { "type": "string", "description": "Optional. The APIVersion of the object. Defaults to 'policy.open-cluster-management.io/v1'." }
         },
         "required": ["name"]
       },
       "placement": {
         "type": "object",
+        "description": "Placement configuration for policies or policy sets, determining which clusters the policy applies to.",
         "properties": {
-          "clusterSelectors": { "type": "object", "additionalProperties": { "type": "string" } },
-          "clusterSelector": { "$ref": "#/definitions/labelSelector" },
-          "labelSelector": { "$ref": "#/definitions/labelSelector" },
-          "name": { "type": "string" },
-          "placementPath": { "type": "string" },
-          "placementRulePath": { "type": "string" },
-          "placementName": { "type": "string" },
-          "placementRuleName": { "type": "string" }
+          "clusterSelectors": { "type": "object", "additionalProperties": { "type": "string" }, "description": "Deprecated. Key-value pair cluster selectors or the full YAML for the desired cluster selectors. Use labelSelector instead." },
+          "clusterSelector": { "$ref": "#/definitions/labelSelector", "description": "Deprecated. Full LabelSelector for the desired cluster selector. Use labelSelector instead." },
+          "labelSelector": { "$ref": "#/definitions/labelSelector", "description": "Key-value pair cluster label selectors or the full LabelSelector for the desired cluster label selector." },
+          "name": { "type": "string", "description": "Optional. Specifying a name will consolidate placement rules that contain the same cluster selectors." },
+          "placementPath": { "type": "string", "description": "To reuse an existing placement manifest, specify the path here relative to the kustomization.yaml file. If given, this placement will be used by all policies by default." },
+          "placementRulePath": { "type": "string", "description": "Deprecated. To reuse an existing placement rule manifest, specify the path here relative to the kustomization.yaml file." },
+          "placementName": { "type": "string", "description": "Use a placement that already exists in the cluster in the same namespace as the policy to be generated. It is the responsibility of the administrator to ensure the placement exists." },
+          "placementRuleName": { "type": "string", "description": "Deprecated. Use a placement rule that already exists in the cluster in the same namespace as the policy to be generated." }
         }
       },
       "manifest": {
         "type": "object",
+        "description": "A manifest entry describes a Kubernetes resource or a set of resources to be included in the policy.",
         "properties": {
-          "path": { "type": "string" },
-          "name": { "type": "string" },
-          "complianceType": { "type": "string" },
-          "metadataComplianceType": { "type": "string" },
-          "namespaceSelector": { "$ref": "#/definitions/namespaceSelector" },
-          "objectSelector": { "$ref": "#/definitions/labelSelector" },
-          "customMessage": { "$ref": "#/definitions/customMessage" },
-          "evaluationInterval": { "$ref": "#/definitions/evaluationInterval" },
-          "extraDependencies": { "type": "array", "items": { "$ref": "#/definitions/dependency" } },
+          "path": { "type": "string", "description": "Required. Path to a single file or a flat directory of files relative to the kustomization.yaml file. This path cannot be in a directory outside of the directory with the kustomization.yaml file. Subdirectories within the directory of the kustomization.yaml file are allowed. Kustomization subdirectories are also supported and will not process any YAML files in the subdirectory if a kustomization.yaml file is found." },
+          "name": { "type": "string", "description": "Optional. This name is used when ConsolidateManifests is set to false and will serve as the ConfigurationPolicy name. If multiple manifests are present in the path, an index number will be appended. If multiple manifests are present and their names are provided, with consolidateManifests set to true, the name of the first manifest will be used for all manifest paths." },
+          "complianceType": { "type": "string", "description": "Optional. Determines the policy controller behavior when comparing the manifest to objects on the cluster ('musthave', 'mustonlyhave', or 'mustnothave'). Defaults to 'musthave'." },
+          "metadataComplianceType": { "type": "string", "description": "Optional. Overrides complianceType when comparing the manifest's metadata section to objects on the cluster ('musthave', 'mustonlyhave'). Default is unset to not override complianceType for metadata." },
+          "namespaceSelector": { "$ref": "#/definitions/namespaceSelector", "description": "Optional. Determines the list of namespaces to check on the cluster for the given manifest. If a namespace is specified in the manifest, the selector is not necessary. This defaults to no selectors. Cannot be specified when consolidateManifests is set to true." },
+          "objectSelector": { "$ref": "#/definitions/labelSelector", "description": "Optional. Defines the label selector for objects defined in the objectDefinition. If there is an object name defined in the objectDefinition, the objectSelector is ignored." },
+          "customMessage": { "$ref": "#/definitions/customMessage", "description": "Optional. customMessage configures the compliance messages emitted by the configuration policy to use one of the specified Go templates based on the current compliance. Cannot be specified when consolidateManifests is set to true." },
+          "evaluationInterval": { "$ref": "#/definitions/evaluationInterval", "description": "Optional. Configures the minimum elapsed time before a configuration policy is reevaluated. Cannot be specified when consolidateManifests is set to true." },
+          "extraDependencies": { "type": "array", "items": { "$ref": "#/definitions/dependency" }, "description": "Optional. A list of objects that should be in specific compliance states before this policy is applied. Cannot be specified when consolidateManifests is set to true." },
           "hubTemplateOptions": {
               "type": "object",
-              "properties": { "serviceAccountName": { "type": "string" } }
+              "description": "Optional. Changes the default behavior of hub templates.",
+              "properties": { "serviceAccountName": { "type": "string", "description": "Optional. serviceAccountName is the name of a service account in the same namespace as the policy to use for all hub template lookups. The service account must have list and watch permissions on any object the hub templates look up. If not specified, lookups are restricted to namespaced objects in the same namespace as the policy and to the ManagedCluster object associated with the propagated policy." } }
           },
-          "pruneObjectBehavior": { "type": "string" },
-          "ignorePending": { "type": "boolean" },
-          "remediationAction": { "type": "string" },
-          "recreateOption": { "type": "string" },
-          "recordDiff": { "type": "string" },
-          "severity": { "type": "string" },
-          "gatekeeperEnforcementAction": { "type": "string" },
-          "patches": { "type": "array", "items": { "type": "object" } },
+          "pruneObjectBehavior": { "type": "string", "description": "Optional. Determines whether objects created or monitored by the policy should be deleted when the policy is deleted. Pruning only takes place if the remediation action of the policy has been set to 'enforce'. Example values are 'DeleteIfCreated', 'DeleteAll', or 'None'. This defaults to unset, which is equivalent to 'None'. Cannot be specified when consolidateManifests is set to true." },
+          "ignorePending": { "type": "boolean", "description": "Optional. Determines whether to treat the policy as compliant when it is waiting for its dependencies to reach their desired states. Defaults to false. Cannot be specified when consolidateManifests is set to true." },
+          "remediationAction": { "type": "string", "description": "Optional. The remediation action ('inform' or 'enforce') for each configuration policy. Cannot be specified when consolidateManifests is set to true." },
+          "recreateOption": { "type": "string", "description": "Optional. Describes whether to delete and recreate an object when an update is required. 'IfRequired' will recreate the object when updating an immutable field. 'Always' will always recreate the object if a mismatch is detected. 'RecreateOption' has no effect when the 'remediationAction' is 'inform'. 'IfRequired' has no effect on clusters without dry run update support. The default value is 'None'." },
+          "recordDiff": { "type": "string", "description": "Optional. Specifies whether and where to log the difference between the object on the cluster and the objectDefinition parameter in the policy. The supported options are 'InStatus' to record the difference in the policy status field, 'Log' to log the difference in the config-policy-controller pod, and 'None' to not log the difference. The default value is 'None' for object kinds that include sensitive data such as ConfigMap, OAuthAccessToken, OAuthAuthorizeTokens, Route, and Secret, or when a templated objectDefinition references sensitive data. For all other kinds, the default value is 'InStatus'." },
+          "severity": { "type": "string", "description": "Optional. The severity of the policy violation. This defaults to 'low'. Cannot be specified when consolidateManifests is set to true." },
+          "gatekeeperEnforcementAction": { "type": "string", "description": "Optional. Overrides the spec.enforcementAction field of a Gatekeeper constraint. This only applies to Gatekeeper constraints and is ignored by other manifests. If not set, the spec.enforcementAction field is not changed." },
+          "patches": { "type": "array", "items": { "type": "object" }, "description": "Optional. A Kustomize patch to apply to the manifest(s) at the path. If there are multiple manifests, the patch requires the apiVersion, kind, metadata.name, and metadata.namespace (if applicable) fields to be set so Kustomize can identify the manifest the patch applies to." },
           "openapi": {
               "type": "object",
+              "description": "The OpenAPI schema used to merge patches (useful for non-Kubernetes CRs that contain lists of items)",
               "properties": {
-                  "path": { "type": "string" }
+                  "path": { "type": "string", "description": "The path to the OpenAPI schema to use when applying patches defined from the patches array." }
               }
           }
         },
@@ -329,16 +348,18 @@
       },
       "customMessage": {
         "type": "object",
+        "description": "Configures the compliance messages emitted by the configuration policy to use one of the specified Go templates based on the current compliance.",
         "properties": {
-          "compliant": { "type": "string" },
-          "noncompliant": { "type": "string" }
+          "compliant": { "type": "string", "description": "The message to use when the policy is compliant." },
+          "noncompliant": { "type": "string", "description": "The message to use when the policy is noncompliant." }
         }
       },
       "evaluationInterval": {
         "type": "object",
+        "description": "Configures the minimum elapsed time before a configuration policy is reevaluated. The default value is 'watch' to leverage Kubernetes API watches instead of polling the Kubernetes API server. If the policy spec is changed or if the list of namespaces selected by the policy changes, the policy might be evaluated regardless of the settings here.",
         "properties": {
-          "compliant": { "type": "string" },
-          "noncompliant": { "type": "string" }
+          "compliant": { "type": "string", "description": "The interval to use when the policy is compliant. Format is a duration (e.g. '1h25m3s') or 'never'. Default is 'watch'." },
+          "noncompliant": { "type": "string", "description": "The interval to use when the policy is noncompliant. Format is a duration (e.g. '1h25m3s') or 'never'. Default is 'watch'." }
         }
       }
     }
