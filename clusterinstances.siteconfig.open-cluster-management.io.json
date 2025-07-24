@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "x-SPDX-FileCopyRightText": "Red Hat",
   "x-SPDX-License-Identifier": "Apache-2.0",
+  "title": "ClusterInstance",
   "description": "ClusterInstance is the Schema for the clusterinstances API",
   "properties": {
     "apiVersion": {
