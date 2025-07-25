@@ -1,6 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
+  "title": "ClusterTemplate",
+  "description": "ClusterTemplate is a resource that defines a template for a cluster.",
+  "x-SPDX-License-Identifier": "Apache-2.0",
+  "x-SPDX-FileCopyRightText": "Red Hat",
   "additionalProperties": false,
   "properties": {
     "apiVersion": {
